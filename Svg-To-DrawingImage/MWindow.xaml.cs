@@ -3,22 +3,58 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace Svg_To_DrawingImage
 {
-    /// <summary>
-    /// MainWindow.xaml 的交互逻辑
-    /// </summary>
-    public partial class MainWindow
+    public partial class MWindow : Window
     {
-        public MainWindow()
+        public MWindow()
         {
             InitializeComponent();
+            this.Loaded += Window_Loaded;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _ = Task.Run(() =>
+            {
+                while (true)
+                {
+                    _ = Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        try
+                        {
+                            if (CKB_Cpb.IsChecked == true && Clipboard.ContainsText())
+                            {
+                                string txt = Clipboard.GetText();
+                                if (txt.Contains("path d=\""))
+                                {
+                                    SVG_Text.Text = Clipboard.GetText();
+                                    Clipboard.Clear();
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Debug.WriteLine("在监控剪切板时发生异常");
+                        }
+                    }));
+                    Thread.Sleep(500);
+                }
+            });
         }
 
         private void SVG_Text_TextChanged(object sender, EventArgs e)
@@ -64,6 +100,7 @@ namespace Svg_To_DrawingImage
                     }
                     Geometry_Text.Text = string.Format("<Geometry x:Key=\"{0}\">{1}</Geometry>", TB_Name.Text, path);
 
+                    #region Draw -> Path
                     TypeConverter converter = TypeDescriptor.GetConverter(typeof(Geometry));
                     Geometry geometry = (Geometry)converter.ConvertFrom(path);
                     if (RaBtn_Geometry.IsChecked == true)
@@ -75,38 +112,39 @@ namespace Svg_To_DrawingImage
                         // 处理一些特殊情况
                         Path_Icon.Data = GeometryMethod.ConvertGeometry(geometry);
                     }
-                    else if (RaBtn_CombinedGeometry.IsChecked == true)
+                    else
                     {
                         // 处理一些特殊情况
                         Path_Icon.Data = GeometryMethod.ConvertGeometryFill(geometry);
                     }
-                    else
-                    {
-                        // 处理彩色图像
-                        DrawingImage_Text.Text = string.Format("<DrawingImage x:Key=\"{0}\">\n  <DrawingImage.Drawing>\n    <DrawingGroup>", TB_Name.Text);
-                        // 给每条 Path 设置颜色
-                        for (int i = 0; i < colors.Count; i++)
-                        {
-                            string str = string.Format("\n      <GeometryDrawing Brush=\"{0}\" Geometry=\"{1}\"/>", colors[i], paths[i]);
-                            DrawingImage_Text.Text += str;
-                        }
-                        DrawingImage_Text.Text += "\n    </DrawingGroup>\n  </DrawingImage.Drawing>\n</DrawingImage>";
+                    #endregion
 
-                        // DrawingImage
-                        DrawingImage image = new DrawingImage();
-                        DrawingGroup group = new DrawingGroup();
-                        for (int i = 0; i < colors.Count; i++)
-                        {
-                            GeometryDrawing drawing = new GeometryDrawing
-                            {
-                                Brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colors[i])),
-                                Geometry = (Geometry)converter.ConvertFrom(paths[i]),
-                            };
-                            group.Children.Add(drawing);
-                        }
-                        image.Drawing = group;
-                        Image_DrawingImage.Source = image;
+                    // 处理彩色图像
+                    DrawingImage_Text.Text = string.Format("<DrawingImage x:Key=\"{0}\">\n  <DrawingImage.Drawing>\n    <DrawingGroup>", TB_Name.Text);
+                    // 给每条 Path 设置颜色
+                    for (int i = 0; i < colors.Count; i++)
+                    {
+                        string str = string.Format("\n      <GeometryDrawing Brush=\"{0}\" Geometry=\"{1}\"/>", colors[i], paths[i]);
+                        DrawingImage_Text.Text += str;
                     }
+                    DrawingImage_Text.Text += "\n    </DrawingGroup>\n  </DrawingImage.Drawing>\n</DrawingImage>";
+
+                    #region Draw -> DrawingImage
+                    // DrawingImage
+                    DrawingImage image = new DrawingImage();
+                    DrawingGroup group = new DrawingGroup();
+                    for (int i = 0; i < colors.Count; i++)
+                    {
+                        GeometryDrawing drawing = new GeometryDrawing
+                        {
+                            Brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colors[i])),
+                            Geometry = (Geometry)converter.ConvertFrom(paths[i]),
+                        };
+                        group.Children.Add(drawing);
+                    }
+                    image.Drawing = group;
+                    Image_DrawingImage.Source = image;
+                    #endregion
                 }
             }
             catch (Exception)
@@ -116,57 +154,20 @@ namespace Svg_To_DrawingImage
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void TB_Name_TextChanged(object sender, TextChangedEventArgs e)
         {
-            _ = Task.Run(() =>
+            if (SVG_Text != null)
             {
-                while (true)
-                {
-                    _ = Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        try
-                        {
-                            if (CKB_Spy.IsChecked == true && Clipboard.ContainsText())
-                            {
-                                string txt = Clipboard.GetText();
-                                if (txt.Contains("path d=\""))
-                                {
-                                    SVG_Text.Text = Clipboard.GetText();
-                                    // 清空剪切板
-                                    Clipboard.Clear();
-                                }
-                            }
-                        }
-                        catch (Exception)
-                        {
-
-                        }
-                    }));
-                    Thread.Sleep(500);
-                }
-            });
-        }
-
-        private void TB_Name_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            SVG_Text_TextChanged(null, null);
+                SVG_Text_TextChanged(null, null);
+            }
         }
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (RaBtn_DrawingImage == null)
+            if (SVG_Text != null)
             {
-                return;
+                SVG_Text_TextChanged(null, null);
             }
-            if (RaBtn_DrawingImage.IsChecked == true)
-            {
-                MyTabControl.SelectedIndex = 1;
-            }
-            else
-            {
-                MyTabControl.SelectedIndex = 0;
-            }
-            SVG_Text_TextChanged(null, null);
         }
 
         private void SVG_Text_DragEnter(object sender, DragEventArgs e)
@@ -191,6 +192,15 @@ namespace Svg_To_DrawingImage
             catch (Exception)
             {
                 Debug.WriteLine("在拖入文件时发生异常");
+            }
+        }
+
+        private void Button_Cp_Click(object sender, RoutedEventArgs e)
+        {
+            switch (MyTabControl.SelectedIndex)
+            {
+                case 0: Clipboard.SetText(Geometry_Text.Text); break;
+                case 1: Clipboard.SetText(DrawingImage_Text.Text); break;
             }
         }
     }
