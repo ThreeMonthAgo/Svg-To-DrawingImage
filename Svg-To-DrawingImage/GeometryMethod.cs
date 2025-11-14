@@ -2,18 +2,13 @@
 using System.ComponentModel;
 using System.Windows.Media;
 
-namespace IconfontX
+namespace Svg_To_DrawingImage
 {
-    ///
-    /// ----------------------------------------------------------------
-    /// Copyright @CoderMan/CoderMan1012 2022 All rights reserved
-    /// Author      : CoderMan/CoderMan1012
-    /// Created Time: 2022/11/1 23:41:08
-    /// Description :
-    /// ------------------------------------------------------
-    /// Version      Modified Time              Modified By                               Modified Content
-    /// V1.0.0.0     2022/11/1 23:41:08    CoderMan/CoderMan1012                 
-    ///
+    /// <summary>
+    /// [GeometryMethod]
+    /// Original Author: CoderMan/CoderMan1012
+    /// Last Modified: 2025/11/14 by ThreeMonthAgo
+    /// </summary>
     public class GeometryMethod
     {
         public static Geometry ConvertGeometry(Geometry geometry)

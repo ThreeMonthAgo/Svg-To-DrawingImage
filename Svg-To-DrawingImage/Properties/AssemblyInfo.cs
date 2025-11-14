@@ -7,12 +7,12 @@ using System.Windows;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("IconfontX")]
+[assembly: AssemblyTitle("Svg-To-DrawingImage")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("IconfontX")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyProduct("Svg-To-DrawingImage")]
+[assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -23,7 +23,7 @@ using System.Windows;
 
 //若要开始生成可本地化的应用程序，请设置
 //.csproj 文件中的 <UICulture>CultureYouAreCodingWith</UICulture>
-//例如，如果您在源文件中使用的是美国英语，
+//在 <PropertyGroup> 中。例如，如果你使用的是美国英语。
 //使用的是美国英语，请将 <UICulture> 设置为 en-US。  然后取消
 //对以下 NeutralResourceLanguage 特性的注释。  更新
 //以下行中的“en-US”以匹配项目文件中的 UICulture 设置。
@@ -48,8 +48,5 @@ using System.Windows;
 //      生成号
 //      修订号
 //
-//可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值
-//通过使用 "*"，如下所示:
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

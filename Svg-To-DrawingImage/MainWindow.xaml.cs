@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace IconfontX
+namespace Svg_To_DrawingImage
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
