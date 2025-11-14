@@ -15,7 +15,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Text="SVG 代码"
+        <TextBlock Text="SVG 代码 （或拖入 SVG 文件）"
                    FontSize="18"
                    Margin="10, 5"
                    Foreground="{DynamicResource PrimaryBrush}"/>
@@ -28,6 +28,8 @@
                                Margin="5"
                                ShowLineNumbers="True"
                                WordWrap="True"
+                               DragEnter="SVG_Text_DragEnter"
+                               Drop="SVG_Text_Drop"
                                TextChanged="SVG_Text_TextChanged"/>
         <Grid Grid.Row="2">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">

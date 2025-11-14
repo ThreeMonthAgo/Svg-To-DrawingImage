@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,7 +62,7 @@ namespace Svg_To_DrawingImage
 
                         colors.Add("#" + op + cl);
                     }
-                    Geometry_Text.Text = string.Format("<Geometry o:Freeze=\"True\" x:Key=\"{0}\">{1}</Geometry>", TB_Name.Text, path);
+                    Geometry_Text.Text = string.Format("<Geometry x:Key=\"{0}\">{1}</Geometry>", TB_Name.Text, path);
 
                     TypeConverter converter = TypeDescriptor.GetConverter(typeof(Geometry));
                     Geometry geometry = (Geometry)converter.ConvertFrom(path);
@@ -81,7 +83,7 @@ namespace Svg_To_DrawingImage
                     else
                     {
                         // 处理彩色图像
-                        DrawingImage_Text.Text = string.Format("<DrawingImage o:Freeze=\"True\" x:Key=\"{0}\">\n  <DrawingImage.Drawing>\n    <DrawingGroup>", TB_Name.Text);
+                        DrawingImage_Text.Text = string.Format("<DrawingImage x:Key=\"{0}\">\n  <DrawingImage.Drawing>\n    <DrawingGroup>", TB_Name.Text);
                         // 给每条 Path 设置颜色
                         for (int i = 0; i < colors.Count; i++)
                         {
@@ -165,6 +167,31 @@ namespace Svg_To_DrawingImage
                 MyTabControl.SelectedIndex = 0;
             }
             SVG_Text_TextChanged(null, null);
+        }
+
+        private void SVG_Text_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Link;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void SVG_Text_Drop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                var filePath = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+                SVG_Text.Text = File.ReadAllText(filePath);
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("在拖入文件时发生异常");
+            }
         }
     }
 }
